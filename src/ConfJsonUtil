@@ -1,0 +1,41 @@
+package com.zoole.util;
+
+import java.io.FileInputStream;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
+/**
+ * json 配置文件读取
+ * 
+ * @author hao
+ *
+ */
+public class ConfJsonUtil {
+
+	/**
+	 * 获取json 配置文件 支持 \/**\/ 和 \/\/ 和 # 的注释 ，
+	 * \/* 这是一个块注释*\/
+	 * \/\/ 这是一个 行注释
+	 * # 这是一个行注释
+	 */
+	public static JSONObject getJSONConf() {
+		try {
+			FileInputStream fis = new FileInputStream("conf/config.json");
+			byte[] fisBytes = new byte[(int) fis.available()];
+			fis.read(fisBytes);
+			fis.close();
+			String jsonStr = new String(fisBytes,"utf-8").replaceAll("//.*[\\n|\\r\\n]", "");
+			jsonStr= jsonStr.replaceAll("/\\*[\\s\\S]*\\*/", "");
+			jsonStr= jsonStr.replaceAll("#.*[\\n|\\r\\n]", "");
+			final JSONObject jsonObject = JSON.parseObject(jsonStr);
+			return jsonObject;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("读取配置文件出错，系统退出！");
+			System.exit(1);
+		}
+
+		return null;
+	}
+}
